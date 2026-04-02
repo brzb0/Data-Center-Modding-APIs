@@ -6,7 +6,7 @@ Clean wrappers are included for player data, network devices, UI, localisation, 
 
 ## Quick Links
 
-- MelonLoader requirements: https://melonwiki.xyz/#/?id=requirements
+- MelonLoader: https://melonwiki.xyz/#/?id=requirements
 - Data Center on Steam: https://store.steampowered.com/app/4170200/Data_Center/
 
 ## Structure
