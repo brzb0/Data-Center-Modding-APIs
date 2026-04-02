@@ -6,6 +6,8 @@ obj/
 *.user
 *.suo
 *.userprefs
+*.rsuser
+*.cache
 
 # IDE folders
 .vs/
@@ -15,6 +17,8 @@ obj/
 # NuGet
 *.nupkg
 packages/
+artifacts/
+TestResults/
 
 # Logs
 *.log
@@ -22,3 +26,4 @@ packages/
 # OS files
 Thumbs.db
 Desktop.ini
+.DS_Store
