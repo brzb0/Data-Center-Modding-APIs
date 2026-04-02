@@ -6,19 +6,25 @@ Clean wrappers are included for player data, network devices, UI, localisation, 
 
 ## Quick Links
 
-- MelonLoader requirements: https://melonwiki.xyz/#/?id=requirements
-- Data Center on Steam: https://store.steampowered.com/app/4170200/Data_Center/
+| Resource | Link |
+| --- | --- |
+| MelonLoader | [MelonLoader](https://melonwiki.xyz/#/) |
+| Data Center | [Data Center on Steam](https://store.steampowered.com/app/4170200/Data_Center/) |
 
 ## Structure
 
-- src/DataCenter.ModigAPIs: SDK library
-- examples/Sample.ModigConsumer: sample mod that covers all features
+| Path | Purpose |
+| --- | --- |
+| src/DataCenter.ModigAPIs | SDK library |
+| examples/Sample.ModigConsumer | Sample mod that covers all features |
 
 ## Requirements
 
-- Data Center installed
-- MelonLoader for .NET 6
-- .NET SDK 6+
+| Requirement | Notes |
+| --- | --- |
+| Data Center | Installed from Steam |
+| MelonLoader | Compatible setup for .NET 6 |
+| .NET SDK | Version 6+ |
 
 Default path used by the csproj files:
 
@@ -28,193 +34,47 @@ If your path is different, update the GameRoot property in both csproj files.
 
 ## How to Use
 
-### 1. Install prerequisites
+| Step | Action | Details |
+| --- | --- | --- |
+| 1 | Install prerequisites | Install Data Center and MelonLoader |
+| 2 | Configure game path | Update GameRoot in src/DataCenter.ModigAPIs/DataCenter.ModigAPIs.csproj and examples/Sample.ModigConsumer/Sample.ModigConsumer.csproj |
+| 3 | Build SDK | Run: cd src/DataCenter.ModigAPIs then dotnet build -c Release |
+| 4 | Build sample mod | Run: cd examples/Sample.ModigConsumer then dotnet build -c Release |
+| 5 | Copy DLL files | Copy DataCenter.ModigAPIs.dll and Sample.ModigConsumer.dll to D:\Juegos\steamapps\common\Data Center\Mods |
+| 6 | Launch and test | Start the game, check logs, then test hotkeys |
 
-1. Install Data Center from Steam.
-2. Install MelonLoader and complete its requirements.
+Build outputs:
 
-### 2. Configure your game path
-
-Update GameRoot in both project files if needed:
-
-- src/DataCenter.ModigAPIs/DataCenter.ModigAPIs.csproj
-- examples/Sample.ModigConsumer/Sample.ModigConsumer.csproj
-
-### 3. Build the SDK
-
-1. cd src/DataCenter.ModigAPIs
-2. dotnet build -c Release
-
-Output:
-
-bin/Release/net6.0/DataCenter.ModigAPIs.dll
-
-### 4. Build the sample mod
-
-1. cd examples/Sample.ModigConsumer
-2. dotnet build -c Release
-
-Output:
-
-bin/Release/net6.0/Sample.ModigConsumer.dll
-
-### 5. Copy DLL files to the game Mods folder
-
-Copy both files into your Data Center Mods folder:
-
-- DataCenter.ModigAPIs.dll
-- Sample.ModigConsumer.dll
-
-Typical destination:
-
-D:\Juegos\steamapps\common\Data Center\Mods
-
-### 6. Launch and test
-
-1. Start the game.
-2. Open MelonLoader logs if you want to monitor runtime output.
-3. Use the sample mod hotkeys listed below to test all SDK areas.
+| Project | Output DLL |
+| --- | --- |
+| DataCenter.ModigAPIs | bin/Release/net6.0/DataCenter.ModigAPIs.dll |
+| Sample.ModigConsumer | bin/Release/net6.0/Sample.ModigConsumer.dll |
 
 ## API Reference
 
-### ModigGame
-
-Purpose:
-
-Provides global access points and readiness checks before calling higher-level APIs.
-
-Main methods:
-
-- IsGameReady: true when PlayerManager and playerClass are available.
-- GetPlayerRaw: returns the raw Il2Cpp Player instance.
-- GetNetworkMapRaw: returns the raw NetworkMap singleton.
-- GetUiRaw: returns the raw StaticUIElements singleton.
-- GetTimeRaw: returns the raw TimeController singleton.
-- GetLocalisationRaw: returns the raw Localisation singleton.
-
-Use it when:
-
-- You want to guard your logic before touching game objects.
-- You need direct raw access for custom low-level behavior.
-
-### PlayerApi
-
-Purpose:
-
-Reads and updates player progression and economy values with safe null checks.
-
-Main methods:
-
-- IsAvailable: checks whether player data is accessible.
-- GetMoney, GetXp, GetReputation: read current values.
-- TryAddMoney, TryAddXp, TryAddReputation: increment values.
-- TrySetMoney, TrySetXp, TrySetReputation: target specific values using delta updates.
-- GetRaw: returns the raw Player object.
-
-Use it when:
-
-- You are building rewards, penalties, admin tools, or balancing scripts.
-
-### NetworkApi
-
-Purpose:
-
-Manages network infrastructure state (servers and switches), including snapshots, failures, and repairs.
-
-Main methods:
-
-- IsAvailable, GetRaw: network map availability and raw object access.
-- GetServersSnapshot, GetSwitchesSnapshot: stable snapshots of all devices.
-- GetBrokenServersSnapshot, GetBrokenSwitchesSnapshot: stable snapshots of broken devices.
-- TryBreakServer, TryBreakSwitch: force a failure on a specific device.
-- TryRepairServer, TryRepairSwitch: repair and optionally power devices on.
-- RepairAllBrokenDevices: batch repair with safe snapshot iteration.
-- GetCounts: returns totals and broken counts in one structure.
-
-Use it when:
-
-- You need event-driven outages, disaster simulation, or one-click recovery actions.
-
-### UiApi
-
-Purpose:
-
-Displays user-facing information using in-game UI channels.
-
-Main methods:
-
-- IsAvailable, GetRaw: UI singleton checks and raw access.
-- TryNotify: pushes a notification using text and optional localisation UID.
-- TryAddMessage: appends text to the in-game message field.
-
-Use it when:
-
-- You want visible feedback for hotkeys, background jobs, or debugging states.
-
-### LocalisationApi
-
-Purpose:
-
-Reads language state and retrieves localized text by ID.
-
-Main methods:
-
-- IsAvailable, GetRaw: localisation singleton checks and raw access.
-- GetCurrentLanguageName: current language enum name.
-- GetCurrentLanguageUid: current language UID used by the game.
-- GetTextById: resolves a localisation entry by ID.
-- TryChangeLanguage: changes language via UID.
-
-Use it when:
-
-- You need multilingual messages or want to test localisation-aware features.
-
-### TimeApi
-
-Purpose:
-
-Reads and controls game time flow.
-
-Main methods:
-
-- IsAvailable, GetRaw: time singleton checks and raw access.
-- GetCurrentDay: current in-game day.
-- GetCurrentHour: current time in hours.
-- GetTimeMultiplier: current simulation speed.
-- TrySetTimeMultiplier: sets simulation speed.
-- IsBetween: helper for time-window logic.
-
-Use it when:
-
-- You need schedules, day/night behavior, or accelerated simulation testing.
-
-### WorldApi
-
-Purpose:
-
-Finds world objects related to shop/network map interactions.
-
-Main methods:
-
-- FindComputerShops: returns all ComputerShop objects found in scene.
-- FindFirstShopWithNetworkMapScreen: first valid shop that has a network map screen.
-- GetNetworkMapScreen: direct access to the network map screen GameObject.
-
-Use it when:
-
-- You need scene anchors for overlays, custom panels, or context-aware tools.
+| API | Purpose | Key methods | Typical use |
+| --- | --- | --- | --- |
+| ModigGame | Global readiness checks and raw singleton access | IsGameReady, GetPlayerRaw, GetNetworkMapRaw, GetUiRaw, GetTimeRaw, GetLocalisationRaw | Guard your logic before accessing game systems and use raw objects for advanced integrations |
+| PlayerApi | Safe player economy and progression control | IsAvailable, GetMoney, GetXp, GetReputation, TryAddMoney, TrySetMoney, TryAddXp, TrySetXp, TryAddReputation, TrySetReputation, GetRaw | Rewards, penalties, balancing tools, progression automation |
+| NetworkApi | Device snapshots, failure simulation, and repair flows | IsAvailable, GetRaw, GetServersSnapshot, GetSwitchesSnapshot, GetBrokenServersSnapshot, GetBrokenSwitchesSnapshot, TryBreakServer, TryBreakSwitch, TryRepairServer, TryRepairSwitch, RepairAllBrokenDevices, GetCounts | Outage events, incident testing, one-click infrastructure recovery |
+| UiApi | In-game feedback surfaces for player-visible messages | IsAvailable, GetRaw, TryNotify, TryAddMessage | Hotkey feedback, status notifications, runtime diagnostics |
+| LocalisationApi | Language state and localized text lookup | IsAvailable, GetRaw, GetCurrentLanguageName, GetCurrentLanguageUid, GetTextById, TryChangeLanguage | Multilingual messaging and localization-aware behavior |
+| TimeApi | Time reading and simulation speed control | IsAvailable, GetRaw, GetCurrentDay, GetCurrentHour, GetTimeMultiplier, TrySetTimeMultiplier, IsBetween | Schedules, day/night logic, fast-forward testing |
+| WorldApi | Scene-level world object discovery helpers | FindComputerShops, FindFirstShopWithNetworkMapScreen, GetNetworkMapScreen | Attaching overlays and building context-aware world tools |
 
 ## Sample mod hotkeys
 
-- F1: help
-- F2: SDK core state and raw object availability
-- F3: player add money/xp/reputation
-- F4: player set money/xp/reputation
-- F5: network counts
-- F6: break one server and one switch
-- F7: repair all broken devices
-- F8: UI notification and UI message
-- F9: localisation info and text lookup
-- F10: change localisation to the same UID (API call test)
-- F11: time read and toggle time multiplier
-- F12: world scan (ComputerShop and network map screen)
+| Key | Action |
+| --- | --- |
+| F1 | Help |
+| F2 | SDK core state and raw object availability |
+| F3 | Player add money/xp/reputation |
+| F4 | Player set money/xp/reputation |
+| F5 | Network counts |
+| F6 | Break one server and one switch |
+| F7 | Repair all broken devices |
+| F8 | UI notification and UI message |
+| F9 | Localisation info and text lookup |
+| F10 | Change localisation to the same UID (API call test) |
+| F11 | Time read and toggle time multiplier |
+| F12 | World scan (ComputerShop and network map screen) |
